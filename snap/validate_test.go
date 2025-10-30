@@ -225,6 +225,7 @@ func (s *ValidateSuite) TestValidateAppSocketsValidListenStreamAddresses(c *C) {
 		"$SNAP_DATA/my.socket",
 		"$SNAP_COMMON/my.socket",
 		"$XDG_RUNTIME_DIR/my.socket",
+		"$SNAP_REAL_XDG_RUNTIME_DIR/my.socket",
 		// abstract sockets
 		"@snap.mysnap.my.socket",
 		// addresses and ports
@@ -283,7 +284,7 @@ func (s *ValidateSuite) TestValidateAppSocketsInvalidListenStreamPathPrefix(c *C
 		err := ValidateApp(app)
 		c.Assert(
 			err, ErrorMatches,
-			`invalid definition of socket "sock": invalid "listen-stream": system daemon sockets must have a prefix of \$SNAP_DATA, \$SNAP_COMMON or \$XDG_RUNTIME_DIR`)
+			`invalid definition of socket "sock": invalid "listen-stream": system daemon sockets must have a prefix of \$SNAP_DATA, \$SNAP_COMMON, \$XDG_RUNTIME_DIR, or \$SNAP_REAL_XDG_RUNTIME_DIR`)
 	}
 }
 

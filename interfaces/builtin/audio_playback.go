@@ -78,6 +78,7 @@ owner @{HOME}/.config/pulse/cookie rk,
 owner /{,var/}run/user/*/pulse/ r,
 owner /{,var/}run/user/*/pulse/native rwk,
 owner /{,var/}run/user/*/pulse/pid r,
+# NOTE(charles): Shouldn't this include pipewire these days, too?
 `
 
 const audioPlaybackConnectedPlugAppArmorCore = `

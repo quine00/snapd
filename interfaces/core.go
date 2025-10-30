@@ -237,6 +237,19 @@ type SymlinksUser interface {
 	TrackedDirectories() []string
 }
 
+// GlobalSocketActivationPathsProvider must be implemented by Interfaces
+// that allow socket activation in global paths outside the standard snap directories.
+// REVIEW: These interfaces should probably be considered privileged, i.e., have
+// allow-installation: false
+// in their base declaration. Probably need a new interface like sound-server, perhaps?
+type GlobalSocketActivationPathsProvider interface {
+	// GlobalSocketActivationPaths returns a list of path patterns that are
+	// allowed for socket activation in addition to the standard snap directories.
+	// Patterns support glob-style matching and must be absolute paths.
+	// Example: "/run/user/[0-9]*/pulse/native"
+	GlobalSocketActivationPaths() []string
+}
+
 // StaticInfo describes various static-info of a given interface.
 //
 // The Summary must be a one-line string of length suitable for listing views.

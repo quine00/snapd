@@ -44,6 +44,9 @@ func renderListenStream(socket *snap.SocketInfo) string {
 		runtimeDir := s.UserXdgRuntimeDir(serviceUserUid)
 		listenStream = strings.Replace(listenStream, "$XDG_RUNTIME_DIR", runtimeDir, -1)
 		listenStream = strings.Replace(listenStream, "$SNAP_COMMON", s.CommonDataDir(), -1)
+		// Support for SNAP_REAL_XDG_RUNTIME_DIR - points to the real user runtime dir
+		// instead of the snap-specific one
+		listenStream = strings.Replace(listenStream, "$SNAP_REAL_XDG_RUNTIME_DIR", fmt.Sprintf("/run/user/%d", serviceUserUid), -1)
 	case snap.UserDaemon:
 		// TODO: use SnapDirOpts here. User daemons are also an experimental
 		// feature so, for simplicity, we can not pass opts here for now
@@ -51,6 +54,9 @@ func renderListenStream(socket *snap.SocketInfo) string {
 		listenStream = strings.Replace(listenStream, "$SNAP_USER_COMMON", s.UserCommonDataDir("%h", nil), -1)
 		// FIXME: find some way to share code with snap.UserXdgRuntimeDir()
 		listenStream = strings.Replace(listenStream, "$XDG_RUNTIME_DIR", fmt.Sprintf("%%t/snap.%s", s.InstanceName()), -1)
+		// Support for SNAP_REAL_XDG_RUNTIME_DIR - points to the real user runtime dir
+		// instead of the snap-specific one (%%t is systemd's %t which is the real XDG_RUNTIME_DIR)
+		listenStream = strings.Replace(listenStream, "$SNAP_REAL_XDG_RUNTIME_DIR", "%t", -1)
 	default:
 		panic("unknown snap.DaemonScope")
 	}

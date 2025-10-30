@@ -480,10 +480,46 @@ func disconnectTasks(st *state.State, conn *interfaces.Connection, flags disconn
 	return ts, nil
 }
 
+// validateSocketActivationWithInterfaces validates socket activation paths
+// using interface-specific global paths from interfaces that implement
+// GlobalSocketActivationPathsProvider.
+func validateSocketActivationWithInterfaces(snapInfo *snap.Info) error {
+	// Build a map of interface names to their implementations
+	interfaceProviders := make(map[string]any)
+
+	// Check all slots in the snap to find interfaces that provide global socket paths
+	for _, slot := range snapInfo.Slots {
+		// Get the interface implementation
+		iface, err := interfaces.ByName(slot.Interface)
+		if err != nil {
+			// Interface not found - this will be caught by other validation
+			continue
+		}
+
+		// Check if the interface provides global socket activation paths
+		if _, ok := iface.(interfaces.GlobalSocketActivationPathsProvider); ok {
+			interfaceProviders[slot.Interface] = iface
+		}
+	}
+
+	// If we have any interfaces that provide global paths, validate with them
+	if len(interfaceProviders) > 0 {
+		return snap.ValidateSocketActivationWithInterfaces(snapInfo, interfaceProviders)
+	}
+
+	// No interfaces with global paths, so standard validation is sufficient
+	return nil
+}
+
 // CheckInterfaces checks whether plugs and slots of snap are allowed for installation.
 func CheckInterfaces(st *state.State, snapInfo *snap.Info, deviceCtx snapstate.DeviceContext) error {
 	// XXX: addImplicitSlots is really a brittle interface
 	if err := addImplicitInterfaces(st, snapInfo); err != nil {
+		return err
+	}
+
+	// Validate socket activation paths with interface-specific global paths
+	if err := validateSocketActivationWithInterfaces(snapInfo); err != nil {
 		return err
 	}
 

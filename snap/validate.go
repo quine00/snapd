@@ -255,14 +255,14 @@ func validateSocketAddrPath(socket *SocketInfo, fieldName string, path string) e
 
 	switch socket.App.DaemonScope {
 	case SystemDaemon:
-		if !(strings.HasPrefix(path, "$SNAP_DATA/") || strings.HasPrefix(path, "$SNAP_COMMON/") || strings.HasPrefix(path, "$XDG_RUNTIME_DIR/")) {
+		if !(strings.HasPrefix(path, "$SNAP_DATA/") || strings.HasPrefix(path, "$SNAP_COMMON/") || strings.HasPrefix(path, "$XDG_RUNTIME_DIR/") || strings.HasPrefix(path, "$SNAP_REAL_XDG_RUNTIME_DIR/")) {
 			return fmt.Errorf(
-				"invalid %q: system daemon sockets must have a prefix of $SNAP_DATA, $SNAP_COMMON or $XDG_RUNTIME_DIR", fieldName)
+				"invalid %q: system daemon sockets must have a prefix of $SNAP_DATA, $SNAP_COMMON, $XDG_RUNTIME_DIR, or $SNAP_REAL_XDG_RUNTIME_DIR", fieldName)
 		}
 	case UserDaemon:
-		if !(strings.HasPrefix(path, "$SNAP_USER_DATA/") || strings.HasPrefix(path, "$SNAP_USER_COMMON/") || strings.HasPrefix(path, "$XDG_RUNTIME_DIR/")) {
+		if !(strings.HasPrefix(path, "$SNAP_USER_DATA/") || strings.HasPrefix(path, "$SNAP_USER_COMMON/") || strings.HasPrefix(path, "$XDG_RUNTIME_DIR/") || strings.HasPrefix(path, "$SNAP_REAL_XDG_RUNTIME_DIR/")) {
 			return fmt.Errorf(
-				"invalid %q: user daemon sockets must have a prefix of $SNAP_USER_DATA, $SNAP_USER_COMMON, or $XDG_RUNTIME_DIR", fieldName)
+				"invalid %q: user daemon sockets must have a prefix of $SNAP_USER_DATA, $SNAP_USER_COMMON, $XDG_RUNTIME_DIR, or $SNAP_REAL_XDG_RUNTIME_DIR", fieldName)
 		}
 	default:
 		return fmt.Errorf("invalid %q: cannot validate sockets for daemon-scope %q", fieldName, socket.App.DaemonScope)
