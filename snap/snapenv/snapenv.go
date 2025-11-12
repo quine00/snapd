@@ -164,10 +164,16 @@ func userEnv(info *snap.Info, home string, opts *dirs.SnapDirOptions) osutil.Env
 		// Snaps using strict or devmode confinement get an override for both
 		// HOME and XDG_RUNTIME_DIR.
 		env["HOME"] = info.UserDataDir(home, opts)
-		env["XDG_RUNTIME_DIR"] = info.UserXdgRuntimeDir(sys.Geteuid())
+		// TODO(charles): Use some kind of feature toggle? Along the lines of ClassicPreservesXdgRuntimeDir?
+		// Or maybe Pipewire should be a classic snap? It seems to run fine under strict confinement, save
+		// for this one issue.
+		if false {
+			env["XDG_RUNTIME_DIR"] = info.UserXdgRuntimeDir(sys.Geteuid())
+		}
 	}
 	// Provide the location of the real home directory.
 	env["SNAP_REAL_HOME"] = home
+	env["SNAP_REAL_XDG_RUNTIME_DIR"], _ = dirs.CurrentUserRuntimeDirectory()
 
 	if opts.MigratedToExposedHome {
 		env["XDG_DATA_HOME"] = filepath.Join(info.UserDataDir(home, opts), "xdg-data")

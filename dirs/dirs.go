@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -134,8 +135,9 @@ var (
 
 	ClassicDir string
 
-	XdgRuntimeDirBase string
-	XdgRuntimeDirGlob string
+	XdgRuntimeDirBase    string
+	XdgRuntimeDirGlob    string
+	XdgCurrentRuntimeDir string
 
 	CompletionHelperInCore string
 	BashCompletionScript   string
@@ -743,4 +745,15 @@ func IsCompleteShSymlink(compPath string) bool {
 	target, err := os.Readlink(compPath)
 	// check if the target paths ends with "/snapd/complete.sh"
 	return err == nil && filepath.Base(filepath.Dir(target)) == "snapd" && filepath.Base(target) == "complete.sh"
+}
+
+func CurrentUserRuntimeDirectory() (string, error) {
+	if XdgCurrentRuntimeDir == "" {
+		u, err := user.Current()
+		if err != nil {
+			return "", fmt.Errorf("cannot get the current user")
+		}
+		XdgCurrentRuntimeDir = filepath.Join(XdgRuntimeDirBase, u.Uid)
+	}
+	return XdgCurrentRuntimeDir, nil
 }
