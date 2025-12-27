@@ -55,17 +55,17 @@ func printVersions(cli *client.Client) error {
 	sv := serverVersion(cli)
 	w := tabWriter()
 
-	fmt.Fprintf(w, "snap\t%s\n", snapdtool.Version)
-	fmt.Fprintf(w, "snapd\t%s\n", sv.Version)
-	fmt.Fprintf(w, "series\t%s\n", sv.Series)
+	fmt.Fprintf(w, "DEBUG snap\t%s\n", snapdtool.Version)
+	fmt.Fprintf(w, "DEBUG snapd\t%s\n", sv.Version)
+	fmt.Fprintf(w, "DEBUG series\t%s\n", sv.Series)
 	if sv.OnClassic {
 		if sv.OSVersionID == "" {
 			sv.OSVersionID = "-"
 		}
-		fmt.Fprintf(w, "%s\t%s\n", sv.OSID, sv.OSVersionID)
+		fmt.Fprintf(w, "DEBUG %s\t%s\n", sv.OSID, sv.OSVersionID)
 	}
 	if sv.KernelVersion != "" {
-		fmt.Fprintf(w, "kernel\t%s\n", sv.KernelVersion)
+		fmt.Fprintf(w, "DEBUG kernel\t%s\n", sv.KernelVersion)
 	}
 
 	w.Flush()
